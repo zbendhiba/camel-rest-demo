@@ -7,7 +7,7 @@ import jakarta.inject.Named;
 @ApplicationScoped
 @RegisterForReflection
 @Named("myBean")
-public class MyBean {
+public class OrderBean {
 
     public CoffeeOrder generateOrder(Coffee coffee){
         return new CoffeeOrder(coffee);
