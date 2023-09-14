@@ -1,9 +1,8 @@
-package org.acme;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Named;
+package dev.zbendhiba.demo.camel.rest;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 @ApplicationScoped
 @RegisterForReflection
@@ -15,6 +14,6 @@ public class MyBean {
     }
 
     public String generateNotification(CoffeeOrder order) {
-        return "ORGANIZER sending notification for new coffee order : " + order.getId();
+        return "Zineb sending notification for new coffee order : " + order.getId();
     }
 }

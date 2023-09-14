@@ -1,13 +1,12 @@
-package org.acme;
+package dev.zbendhiba.demo.camel.rest;
 
-import java.util.UUID;
-
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQuery;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import java.util.UUID;
 
 @Entity
 @RegisterForReflection

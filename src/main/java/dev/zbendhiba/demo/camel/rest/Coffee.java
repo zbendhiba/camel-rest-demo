@@ -1,4 +1,4 @@
-package org.acme;
+package dev.zbendhiba.demo.camel.rest;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
