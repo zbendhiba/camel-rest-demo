@@ -14,6 +14,6 @@ public class MyBean {
     }
 
     public String generateNotification(CoffeeOrder order) {
-        return "Zineb sending notification for new coffee order : " + order.getId();
+        return "New coffee order for delivery : Order number: " + order.getId();
     }
 }

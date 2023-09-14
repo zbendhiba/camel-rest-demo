@@ -2,7 +2,10 @@ package dev.zbendhiba.demo.camel.rest;
 
 import jakarta.inject.Inject;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.aws2.s3.AWS2S3Constants;
 import org.apache.camel.model.rest.RestBindingMode;
+
+import java.util.UUID;
 
 public class RestRoutes extends RouteBuilder {
 
@@ -16,28 +19,10 @@ public class RestRoutes extends RouteBuilder {
                 .componentProperty("lazyStartProducer", "true")
                 .dataFormatProperty("autoDiscoverObjectMapper", "true");
 
-        /**
-         * This Camel Route simulates the external app that adds orders
-         */
-     /*   from("timer:create-random-coffee-orders?period={{timer.period}}")
-                .to("https:{{random-coffee-api}}")
-                .unmarshal().json(Coffee.class)
-                .bean(MyBean.class, "generateOrder")
-                .marshal().json()
-                .to("kafka:orders");
 
-        // This is the Kafka Consumer Route to implement
-        from("kafka:orders")
-                .log("received from kafka : ${body}")
-                .unmarshal().json(CoffeeOrder.class)
-                .to("jpa:"+CoffeeOrder.class)
-                .bean(MyBean.class, "generateNotification")
-                .log("${body}")
-                .to("telegram:bots?chatId={{telegram.chatId}}")
-        ;*/
 
         /**
-         * REST api to fetch Coffee Orders
+         * REST api to add and fetch Coffee Orders
          */
         rest("order-api").description("Coffee Orders REST service")
                 .post("/order").description("Add a new coffee Order")
@@ -51,8 +36,9 @@ public class RestRoutes extends RouteBuilder {
                 .routeId("orders")
                 .bean(MyBean.class, "generateOrder")
                 .to("jpa:"+CoffeeOrder.class)
+                .wireTap("direct:notify")
                 .log(" New order ${body}")
-                .setBody(constant("Thanks for your order"))
+                .setBody(constant("Thank you for your order"))
                 ;
 
         from("direct:orders-api")
@@ -66,5 +52,22 @@ public class RestRoutes extends RouteBuilder {
                 .log("Received a message in route order-api")
                 .toD("jpa://" + CoffeeOrder.class.getName() + "?query=select m  from " + CoffeeOrder.class.getName() + " m  where id =${header.id}")
         ;
+
+        from("direct:notify")
+                .to("direct:s3")
+                .wireTap("direct:notify-delivery");
+
+        from("direct:s3")
+                .log("sending to S3")
+                .marshal().json()
+                .setHeader(AWS2S3Constants.KEY, () -> UUID.randomUUID())
+                .log(String.format("Sending message with header :: ${header.%s}", AWS2S3Constants.KEY))
+                .to("aws2-s3:{{aws-s3.bucket-name}}");
+        ;
+
+        from("direct:notify-delivery")
+                .bean(MyBean.class, "generateNotification")
+                .log("Sending notification for delivery ${body}")
+                .to("telegram:bots?chatId={{telegram.chatId}}");
     }
 }
