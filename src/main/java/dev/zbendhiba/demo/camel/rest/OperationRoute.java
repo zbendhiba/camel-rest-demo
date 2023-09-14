@@ -11,19 +11,19 @@ public class OperationRoute extends RouteBuilder {
         from("direct:add-order")
                 .routeId("add-order")
                 .bean(OrderBean.class, "generateOrder")
+                .log(" New order to persist ${body}")
                 .to("jpa:"+CoffeeOrder.class)
                 .wireTap("direct:notify")
-                .log(" New order ${body}")
                 .setBody(constant("Thank you for your order"));
 
         from("direct:orders-api")
                 .routeId("orders-api")
-                .log("Received a message in route orders-api")
+                .log("Getting all orders")
                 .to("jpa:" + CoffeeOrder.class + "?namedQuery=findAll");
 
         from("direct:order-api")
                 .routeId("order-api")
-                .log("Received a message in route order-api")
+                .log("Getting order ${header.id}")
                 .toD("jpa://" + CoffeeOrder.class.getName() + "?query=select m  from " + CoffeeOrder.class.getName() + " m  where id =${header.id}");
 
         from("direct:notify")
