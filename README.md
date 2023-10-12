@@ -9,7 +9,7 @@ This repository contains a demo for a talk on connecting disparate systems in a 
 - _Optional_ Credentials for an AWS S3 bucket and a Telegram chatbot, along with your chat ID
 - _Optional_ Postgresql database and Kafka
 
-![Demo Architecture](demo.png)
+![Demo Architecture](camel-demo.png)
 _Figure 1: High-level architecture of the demo_
 
 To run the demo in development mode, follow these steps:
