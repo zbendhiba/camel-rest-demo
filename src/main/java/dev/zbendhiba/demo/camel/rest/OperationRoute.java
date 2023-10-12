@@ -8,6 +8,21 @@ import java.util.UUID;
 public class OperationRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
+
+        //Error Handling
+        errorHandler(deadLetterChannel("direct:errorQueue")
+                .maximumRedeliveries(3) // Maximum number of redelivery attempts
+                .redeliveryDelay(1000) // Delay between redelivery attempts
+                .logExhausted(true) // Log if redelivery attempts are exhausted
+        );
+
+        // Define the DLC route to handle failed messages
+        from("direct:errorQueue")
+                .log("ERROR happened Sending notification to Order ${header.orderId}")
+                .transform().simple("{'orderId':'${header.orderId}'}")
+                .to("kafka:errorTopic")
+        ;
+
         from("direct:add-order")
                 .routeId("add-order")
                 .bean(OrderBean.class, "generateOrder")
@@ -39,6 +54,10 @@ public class OperationRoute extends RouteBuilder {
 
 
         from("direct:notify-delivery")
+                .process(exchange ->{
+                    CoffeeOrder order = exchange.getMessage().getBody(CoffeeOrder.class);
+                    exchange.getMessage().setHeader("orderId", order.getId());
+                })
                 .bean(OrderBean.class, "generateNotification")
                 .log("Sending notification for delivery ${body}")
                 .to("telegram:bots?chatId={{telegram.chatId}}");
