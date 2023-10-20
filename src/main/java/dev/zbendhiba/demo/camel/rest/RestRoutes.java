@@ -1,10 +1,8 @@
 package dev.zbendhiba.demo.camel.rest;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.aws2.s3.AWS2S3Constants;
 import org.apache.camel.model.rest.RestBindingMode;
 
-import java.util.UUID;
 
 public class RestRoutes extends RouteBuilder {
 
@@ -29,10 +27,6 @@ public class RestRoutes extends RouteBuilder {
                 .to("direct:orders-api")
                 .get("/order/{id}").description("A Coffee order by id")
                 .to("direct:order-api");
-
-
-
-
 
     }
 }
