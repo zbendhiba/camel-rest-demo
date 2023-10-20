@@ -44,3 +44,5 @@ quarkus.log*
 
 # Camel Quarkus Performance Regression Reports
 perf-regression-report@*.txt
+
+jbang/.camel-jbang/camel-jbang-run.properties
