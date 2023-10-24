@@ -1,69 +1,16 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Get Orders</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-</head>
-<body>
-<h1>Get Orders</h1>
-<table id="outputTable"></table>
-
-<script>
-    function fetchOrders() {
-        fetch('/order-api/order')
-            .then(response => response.json())
-            .then(data => {
-                const table = document.getElementById('outputTable');
-                clearTable(table);
-                if (Array.isArray(data) && data.length > 0) {
-                    const tableHeader = Object.keys(data[0]);
-                    generateTable(table, data, tableHeader);
-                } else {
-                    table.innerHTML = "<tr><td>No Orders found</td></tr>";
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    function clearTable(table) {
-        table.innerHTML = "";
-    }
-
-    function generateTable(table, data, tableHeader) {
-        let tbody = table.createTBody();
-        let headerRow = tbody.insertRow();
-        for (let key of tableHeader) {
-            let headerCell = headerRow.insertCell();
-            let text = document.createTextNode(key);
-            headerCell.appendChild(text);
-            headerCell.style.fontWeight = "bold"; // Add bold to the header cells
-        }
-
-        for (let element of data) {
-            let dataRow = tbody.insertRow();
-            for (let key in element) {
-                let dataCell = dataRow.insertCell();
-                let text = document.createTextNode(element[key]);
-                dataCell.appendChild(text);
-            }
-        }
-    }
-
-    // Fetch orders when the page is loaded
-    document.addEventListener('DOMContentLoaded', fetchOrders);
-</script>
-</body>
+    <head>
+        <title>Get Orders</title>
+        <link rel="stylesheet" type="text/css" href="get-order.css">
+    </head>
+    <body>
+        <script src="get-orders-script.js"></script>
+        <h1>Get Orders</h1>
+        <table id="outputTable"></table>
+    </body>
+    <script>
+        // Fetch orders when the page is loaded
+        document.addEventListener('DOMContentLoaded', fetchOrders);
+    </script>
 </html>
