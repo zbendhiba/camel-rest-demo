@@ -22,71 +22,48 @@
 <table id="outputTable"></table>
 
 <script>
-    const data = [
-        {
-            "id": 1,
-            "userId": "1012",
-            "coffeeId": 469,
-            "name": "Strong Select"
-        },
-        {
-            "id": 2,
-            "userId": "1013",
-            "coffeeId": 4351,
-            "name": "Green Pie"
-        },
-        {
-            "id": 3,
-            "userId": "1014",
-            "coffeeId": 3036,
-            "name": "Morning America"
-        },
-        {
-            "id": 4,
-            "userId": "b8ca26f6-2f43-40c9-882c-2620d70caa8b",
-            "coffeeId": 5322,
-            "name": "The Been"
-        },
-        {
-            "id": 5,
-            "userId": "7f78cee0-089d-4cf3-ba70-0f9022d88b2a",
-            "coffeeId": 8861,
-            "name": "Seattle Been"
-        },
-        {
-            "id": 6,
-            "userId": "74b5e455-c7b2-421c-a7e5-9dbca05dc98d",
-            "coffeeId": 3097,
-            "name": "The Captain's America"
-        }
-    ];
-
-    const table = document.getElementById('outputTable');
-    const tableHeader = Object.keys(data[0]);
-    generateTableHead(table, tableHeader);
-    generateTable(table, data);
-
-    function generateTableHead(table, data) {
-        let thead = table.createTHead();
-        let row = thead.insertRow();
-        for (let key of data) {
-            let th = document.createElement('th');
-            let text = document.createTextNode(key);
-            th.appendChild(text);
-            row.appendChild(th);
-        }
+    function fetchOrders() {
+        fetch('/order-api/order')
+            .then(response => response.json())
+            .then(data => {
+                const table = document.getElementById('outputTable');
+                clearTable(table);
+                if (Array.isArray(data) && data.length > 0) {
+                    const tableHeader = Object.keys(data[0]);
+                    generateTable(table, data, tableHeader);
+                } else {
+                    table.innerHTML = "<tr><td>No Orders found</td></tr>";
+                }
+            })
+            .catch(error => console.error('Error:', error));
     }
 
-    function generateTable(table, data) {
+    function clearTable(table) {
+        table.innerHTML = "";
+    }
+
+    function generateTable(table, data, tableHeader) {
+        let tbody = table.createTBody();
+        let headerRow = tbody.insertRow();
+        for (let key of tableHeader) {
+            let headerCell = headerRow.insertCell();
+            let text = document.createTextNode(key);
+            headerCell.appendChild(text);
+            headerCell.style.fontWeight = "bold"; // Add bold to the header cells
+        }
+
         for (let element of data) {
-            let row = table.insertRow();
-            for (key in element) {
-                let cell = row.insertCell();
+            let dataRow = tbody.insertRow();
+            for (let key in element) {
+                let dataCell = dataRow.insertCell();
                 let text = document.createTextNode(element[key]);
-                cell.appendChild(text);
+                dataCell.appendChild(text);
             }
         }
     }
+
+    // Fetch orders when the page is loaded
+    document.addEventListener('DOMContentLoaded', fetchOrders);
 </script>
 </body>
 </html>
