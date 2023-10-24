@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get Order by ID</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>Get Order by ID</h1>
+<form onsubmit="getOrderById(event)">
+    <label for="orderId">Order ID:</label>
+    <input type="text" id="orderId" name="orderId">
+    <input type="submit" value="Submit">
+</form>
+<table id="outputTable"></table>
+
+<script>
+    function getOrderById(event) {
+        event.preventDefault();
+        const orderId = document.getElementById('orderId').value;
+        fetch(`/order-api/order/${orderId}`)
+            .then(response => response.json())
+            .then(data => {
+                const table = document.getElementById('outputTable');
+                clearTable(table);
+                if (Array.isArray(data) && data.length === 1) {
+                    const tableHeader = Object.keys(data[0]);
+                    generateTable(table, data[0], tableHeader);
+                } else {
+                    table.innerHTML = "<tr><td>Order not found</td></tr>";
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function clearTable(table) {
+        table.innerHTML = "";
+    }
+
+    function generateTable(table, data, tableHeader) {
+        let tbody = table.createTBody();
+        let row = tbody.insertRow();
+        for (let key of tableHeader) {
+            let cell = row.insertCell();
+            let text = document.createTextNode(key);
+            cell.appendChild(text);
+        }
+
+        let dataRow = tbody.insertRow();
+        for (let key in data) {
+            let cell = dataRow.insertCell();
+            let text = document.createTextNode(data[key]);
+            cell.appendChild(text);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Caller</title>
+    <style>
+        .container {
+            display: flex;
+        }
+        .column {
+            flex: 33.33%;
+            padding: 10px;
+        }
+        .output {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 400px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+<h1>API Caller</h1>
+<div class="container">
+    <div class="column">
+        <h2>API Pages</h2>
+        <ul>
+            <li><a href="/get-orders">Get Orders</a></li>
+            <li><a href="/get-order-by-id">Get Order by ID</a></li>
+            <li><a href="#" onclick="showAddOrderForm()">Add Order</a></li>
+        </ul>
+    </div>
+    <div class="column">
+        <h2>Output</h2>
+        <div class="output" id="output"></div>
+    </div>
+</div>
+
+<div class="column" id="addOrderForm" style="display:none;">
+    <h2>Add Order</h2>
+    <form onsubmit="submitOrder(event)">
+        <textarea id="jsonInput" rows="10" cols="50" placeholder="Enter JSON for the new order"></textarea>
+        <br />
+        <input type="submit" value="Submit" />
+    </form>
+</div>
+
+<script>
+    // You can add event listeners for the links here
+    // For demonstration purposes, we'll add a simple click event for each link.
+    document.querySelector('a[href="/get-orders"]').addEventListener('click', getOrders);
+    document.querySelector('a[href="/get-order-by-id"]').addEventListener('click', getOrderById);
+
+    function showAddOrderForm() {
+        var addOrderForm = document.getElementById('addOrderForm');
+        addOrderForm.style.display = 'block';
+    }
+
+    function submitOrder(event) {
+        event.preventDefault();
+        const jsonInput = document.getElementById('jsonInput').value;
+        const jsonData = JSON.parse(jsonInput);
+
+        fetch('/order-api/order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('New Order:', data);
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function getOrders(event) {
+        event.preventDefault();
+        fetch('/order-api/order')
+            .then(response => response.json())
+            .then(data => {
+                console.log('List of Orders:', data);
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function getOrderById(event) {
+        event.preventDefault();
+        var id = prompt('Enter the ID of the order:');
+        if (id) {
+            fetch(`/order-api/order/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Order with ID:', id, data);
+                    const outputDiv = document.getElementById('output');
+                    outputDiv.innerText = JSON.stringify(data, null, 2);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+</script>
+</body>
+</html>
