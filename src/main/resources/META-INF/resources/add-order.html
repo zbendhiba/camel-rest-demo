@@ -8,10 +8,22 @@
 <form onsubmit="submitOrder(event)">
     <textarea id="jsonInput" rows="10" cols="50" placeholder="Enter JSON for the new order"></textarea>
     <br />
+    <button type="button" onclick="fillWithRandomData()">Fill with Random Data</button>
+    <br />
     <input type="submit" value="Submit" />
 </form>
 <div id="output"></div>
 <script>
+
+    function fillWithRandomData() {
+        fetch('https://random-data-api.com/api/coffee/random_coffee')
+            .then(response => response.json())
+            .then(data => {
+                const jsonInput = document.getElementById('jsonInput');
+                jsonInput.value = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error:', error));
+    }
     function submitOrder(event) {
         event.preventDefault();
         const jsonInput = document.getElementById('jsonInput').value;
